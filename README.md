@@ -1,5 +1,4 @@
-> Mission in progress. 
-
+> Mission in progress. Will update readme and results, once everything works well. Thanks
 ## VaultRAG
 
 A local Retrieval-Augmented Generation system for question answering over private documents.
