@@ -1,4 +1,6 @@
-# VaultRAG
+> Mission in progress. 
+
+## VaultRAG
 
 A local Retrieval-Augmented Generation system for question answering over private documents.
 
