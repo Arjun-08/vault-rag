@@ -372,7 +372,7 @@ Evaluation is necessary to distinguish a functioning application from a reliable
 Hit Rate@K measures the fraction of questions for which at least one retrieved passage is identified as relevant within the top \(K\) results.
 
 \[
-\operatorname{HitRate@K}
+\{HitRate@K}
 =
 \frac{1}{N}
 \sum_{i=1}^{N}
@@ -391,7 +391,7 @@ A higher value indicates that relevant evidence is being found more consistently
 Precision@K measures the proportion of retrieved passages that are relevant within the top \(K\).
 
 \[
-\operatorname{Precision@K}
+\{Precision@K}
 =
 \frac{1}{N}
 \sum_{i=1}^{N}
@@ -405,7 +405,7 @@ Precision helps measure how much of the selected context is useful rather than i
 Mean Reciprocal Rank (MRR) rewards systems that rank a relevant passage near the top of the result list.
 
 \[
-\operatorname{MRR}
+\{MRR}
 =
 \frac{1}{N}
 \sum_{i=1}^{N}
