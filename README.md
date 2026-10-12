@@ -44,11 +44,9 @@ Let:
 
 The answer can be expressed as:
 
-\[
-\hat{y} = G\left(q, R_k(q,D)\right)
-\]
+ŷ = G(q, Rₖ(q, D))
 
-Here, \(\hat{y}\) is the generated response, conditioned on both the question and the retrieved evidence.
+Here, **ŷ** is the generated response, conditioned on both the question **q** and the retrieved evidence **Rₖ(q, D)**.
 
 The retrieval component determines which information reaches the model, while the generation component determines how that information is expressed as an answer.
 
@@ -58,26 +56,28 @@ This separation makes it possible to investigate retrieval errors and generation
 
 The application follows a modular pipeline that separates document preparation, retrieval, generation, evaluation, and the user interface.
 
+
 ```mermaid
 flowchart TD
-    A[PDF / DOCX / TXT / Markdown] --> B[Document Ingestion]
-    B --> C[Text Extraction and Metadata]
-    C --> D[Chunking with Overlap]
-    D --> E[Local Embedding Model]
-    E --> F[FAISS Vector Index]
-    F --> G[Question Embedding]
-    G --> H[Dense Retrieval]
-    H --> I[Candidate Passages]
-    I --> J[Lexical Reranking]
-    J --> K[Top-K Context]
-    K --> L[Local Qwen3 LLM]
-    L --> M[Grounded Answer]
-    M --> N[Source References]
+    A["Documents: PDF, DOCX, TXT, MD"] --> B["Extract Text"]
+    B --> C["Chunk Text and Add Metadata"]
+    C --> D["Generate Embeddings"]
+    D --> E[("FAISS Vector Index")]
 
-    O[Streamlit Interface] --> A
-    O --> G
-    N --> O
+    F["User Question"] --> G["Embed Question"]
+    G --> H["Search FAISS Index"]
+    E --> H
+    H --> I["Lexical Reranking"]
+    I --> J["Select Top-K Context"]
+    J --> K["Local Qwen3 LLM"]
+    K --> L["Generate Grounded Answer"]
+    L --> M["Attach Source References"]
+
+    N["Streamlit UI"] --> A
+    N --> F
+    M --> N
 ```
+
 
 The ingestion and indexing stages prepare the document collection before questions are asked. At query time, the question is embedded, relevant passages are retrieved and reranked, and the local LLM generates a response using the selected context.
 
@@ -98,8 +98,6 @@ The system can also operate through a command-line interface, making the backend
 | User interface | Streamlit | Document upload and interactive question answering |
 
 The initial implementation uses local model execution and does not require a paid LLM API.
-
-Model weights and dependencies must be downloaded during setup. Their respective licenses and usage terms should be checked before redistribution or commercial deployment.
 
 ## 5. Document Ingestion and Preprocessing
 
@@ -183,15 +181,15 @@ VaultRAG uses `BAAI/bge-small-en-v1.5` to encode document chunks and user questi
 
 For a document chunk \(d_i\), the embedding is:
 
-\[
+```math
 \mathbf{v}_i = f_{\theta}(d_i)
-\]
+```
 
-For a query \(q\):
+For a query \(q\), the embedding is:
 
-\[
+```math
 \mathbf{v}_q = f_{\theta}(q)
-\]
+```
 
 Here, \(f_{\theta}\) represents the pretrained embedding model.
 
@@ -202,7 +200,7 @@ Texts with related meanings can have similar vectors even when they do not conta
 A common similarity measure for embeddings is cosine similarity:
 
 \[
-\operatorname{sim}(\mathbf{u},\mathbf{v})
+\{sim}(\mathbf{u},\mathbf{v})
 =
 \frac{\mathbf{u}^{\top}\mathbf{v}}
 {\|\mathbf{u}\|_2\|\mathbf{v}\|_2}
@@ -211,7 +209,7 @@ A common similarity measure for embeddings is cosine similarity:
 When embeddings are normalized to unit length, this simplifies to:
 
 \[
-\operatorname{sim}(\mathbf{u},\mathbf{v})
+\{sim}(\mathbf{u},\mathbf{v})
 =
 \mathbf{u}^{\top}\mathbf{v}
 \]
