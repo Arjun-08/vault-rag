@@ -37,10 +37,10 @@ The process has two principal stages:
 
 Let:
 
-- \(q\) denote the user's question.
-- \(D\) denote the indexed document collection.
-- \(R_k(q,D)\) denote the top-\(k\) passages retrieved for the question.
-- \(G\) denote the language model.
+- `q` denotes the user's question.
+- `D` denotes the indexed document collection.
+- `R_k(q, D)` denotes the top-k passages retrieved for the question.
+- `G` denotes the language model.
 
 The answer can be expressed as:
 
