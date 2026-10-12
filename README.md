@@ -191,7 +191,7 @@ For a query \(q\), the embedding is:
 \mathbf{v}_q = f_{\theta}(q)
 ```
 
-Here, \(f_{\theta}\) represents the pretrained embedding model.
+Here, $f_{\theta}$ represents the pretrained embedding model.
 
 Texts with related meanings can have similar vectors even when they do not contain identical words.
 
@@ -199,23 +199,20 @@ Texts with related meanings can have similar vectors even when they do not conta
 
 A common similarity measure for embeddings is cosine similarity:
 
-\[
-\{sim}(\mathbf{u},\mathbf{v})
-=
+$$
+\{sim}(\mathbf{u}, \mathbf{v}) =
 \frac{\mathbf{u}^{\top}\mathbf{v}}
-{\|\mathbf{u}\|_2\|\mathbf{v}\|_2}
-\]
+{\|\mathbf{u}\|_2 \|\mathbf{v}\|_2}
+$$
 
 When embeddings are normalized to unit length, this simplifies to:
 
-\[
-\{sim}(\mathbf{u},\mathbf{v})
-=
+$$
+\{sim}(\mathbf{u}, \mathbf{v}) =
 \mathbf{u}^{\top}\mathbf{v}
-\]
+$$
 
 VaultRAG normalizes embeddings before indexing them. FAISS then performs inner-product search, which corresponds to cosine similarity for these normalized vectors.
-
 ## 7. Vector Search with FAISS
 
 FAISS is a library for efficient similarity search over dense vectors.
@@ -224,15 +221,13 @@ Instead of comparing a question against every document using literal string matc
 
 The retrieval objective is:
 
-\[
-R_k(q,D)
-=
-\underset{d_i \in D}{\operatorname{TopK}}
-\operatorname{sim}
-\left(
+$$
+R_k(q,D) =
+\underset{d_i \in D}{\mathrm{TopK}}
+\mathrm{sim}\left(
 f_{\theta}(q), f_{\theta}(d_i)
 \right)
-\]
+$$
 
 The initial implementation uses `IndexFlatIP`, an exact inner-product search index.
 
@@ -261,11 +256,9 @@ Let:
 
 The current reranking score is:
 
-\[
-s_{\text{rank}}
-=
-0.75s_d + 0.25s_l
-\]
+$$
+s_{\text{rank}} = 0.75s_d + 0.25s_l
+$$
 
 The lexical component measures how much of the query's token content overlaps with the candidate passage.
 
@@ -369,16 +362,14 @@ Evaluation is necessary to distinguish a functioning application from a reliable
 
 Hit Rate@K measures the fraction of questions for which at least one retrieved passage is identified as relevant within the top \(K\) results.
 
-\[
-\{HitRate@K}
-=
+$$
+\mathrm{HitRate@K} =
 \frac{1}{N}
 \sum_{i=1}^{N}
-\mathbb{1}
-\left[
-\text{a relevant passage appears in top }K
+\mathbb{1}\left[
+\text{a relevant passage appears in top } K
 \right]
-\]
+$$
 
 Here, \(N\) is the number of evaluation questions.
 
@@ -388,13 +379,12 @@ A higher value indicates that relevant evidence is being found more consistently
 
 Precision@K measures the proportion of retrieved passages that are relevant within the top \(K\).
 
-\[
-\{Precision@K}
-=
+$$
+\mathrm{Precision@K} =
 \frac{1}{N}
 \sum_{i=1}^{N}
-\frac{\text{relevant passages in top }K}{K}
-\]
+\frac{\text{relevant passages in top } K}{K}
+$$
 
 Precision helps measure how much of the selected context is useful rather than irrelevant.
 
@@ -402,13 +392,12 @@ Precision helps measure how much of the selected context is useful rather than i
 
 Mean Reciprocal Rank (MRR) rewards systems that rank a relevant passage near the top of the result list.
 
-\[
-\{MRR}
-=
+$$
+\mathrm{MRR} =
 \frac{1}{N}
 \sum_{i=1}^{N}
 \frac{1}{r_i}
-\]
+$$
 
 Here, \(r_i\) is the rank of the first relevant result for question \(i\). If no relevant result is found, its reciprocal rank is zero.
 
@@ -418,16 +407,12 @@ Higher MRR indicates better ranking of the first relevant passage.
 
 Exact Match measures whether a normalized prediction exactly matches at least one reference answer.
 
-\[
-\operatorname{EM}
-=
+$$
+\mathrm{EM} =
 \frac{1}{N}
 \sum_{i=1}^{N}
-\mathbb{1}
-\left[
-\hat{a}_i \equiv a_i
-\right]
-\]
+\mathbb{1}\left[\hat{a}_i \equiv a_i\right]
+$$
 
 Normalization may remove punctuation, articles, and differences in letter case.
 
@@ -437,17 +422,23 @@ Exact Match is strict: a correct answer with additional wording can receive a ze
 
 Token F1 measures the overlap between predicted and reference answer tokens.
 
-\[
-P = \frac{TP}{TP+FP}
-\]
+**Precision:**
 
-\[
-R = \frac{TP}{TP+FN}
-\]
+$$
+P = \frac{TP}{TP + FP}
+$$
 
-\[
-F_1 = \frac{2PR}{P+R}
-\]
+**Recall:**
+
+$$
+R = \frac{TP}{TP + FN}
+$$
+
+**F1 Score:**
+
+$$
+F_1 = \frac{2PR}{P + R}
+$$
 
 Here, \(TP\), \(FP\), and \(FN\) represent overlapping, unmatched predicted, and unmatched reference tokens under the evaluation procedure.
 
@@ -457,15 +448,12 @@ Token F1 provides a more flexible comparison than Exact Match, although it does 
 
 The application also measures retrieval and generation latency.
 
-\[
-T_{\text{total}}
-=
-T_{\text{retrieval}}
-+
-T_{\text{generation}}
-+
-T_{\text{other}}
-\]
+$$
+T_{\mathrm{total}} =
+T_{\mathrm{retrieval}} +
+T_{\mathrm{generation}} +
+T_{\mathrm{other}}
+$$
 
 Retrieval latency measures the time required to find and rerank passages. Generation latency measures the time taken to produce the response.
 
@@ -495,16 +483,6 @@ Potential comparisons include:
 
 Each experiment should use a consistent evaluation set and report actual measured results.
 
-A suitable results table is:
-
-| Configuration | Hit Rate@5 | Precision@5 | MRR | Answer EM | Answer F1 |
-|---|---:|---:|---:|---:|---:|
-| Baseline | To be measured | To be measured | To be measured | To be measured | To be measured |
-| Alternative chunking | To be measured | To be measured | To be measured | To be measured | To be measured |
-| Reranking enabled | To be measured | To be measured | To be measured | To be measured | To be measured |
-
-These values must be populated from completed experiments rather than estimates.
-
 ## 14. Streamlit Application
 
 The Streamlit interface provides a practical way to interact with the retrieval pipeline.
@@ -524,43 +502,9 @@ The UI is separated from the backend so that document ingestion, embedding, retr
 
 This separation also makes it easier to test individual components without launching the interface.
 
-## 15. Project Structure
 
-```text
-vault-rag/
-├── app.py
-├── main.py
-├── requirements.txt
-├── README.md
-├── .gitignore
-│
-├── src/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── ingestion.py
-│   ├── chunking.py
-│   ├── embeddings.py
-│   ├── vector_store.py
-│   ├── dataset.py
-│   ├── retrieval.py
-│   ├── llm.py
-│   ├── pipeline.py
-│   └── evaluation.py
-│
-├── tests/
-│   └── test_core.py
-│
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── evaluation/
-│
-├── vector_store/
-│
-└── outputs/
-```
 
-### Module responsibilities
+## 15. Module responsibilities
 
 | Module | Responsibility |
 |---|---|
@@ -577,34 +521,7 @@ vault-rag/
 | `main.py` | Command-line execution |
 | `app.py` | Streamlit interface |
 
-## 16. Installation
-
-### Prerequisites
-
-- Python 3.10 or later, compatible with the selected dependencies
-- Internet access for downloading dependencies and model weights during initial setup
-- Sufficient memory and storage for the selected embedding model, local LLM, and indexed documents
-
-CPU execution is supported by the intended setup, although model loading and generation may be slow on some machines.
-
-### Create an isolated environment
-
-On Windows PowerShell:
-
-```powershell
-git clone https://github.com/Arjun-08/vault-rag.git
-cd vault-rag
-
-python -m venv .venv
-.venv\Scripts\activate
-
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-Using a project-specific environment keeps the dependencies isolated from unrelated Python and Anaconda projects.
-
-## 17. Usage
+## 16. Usage
 
 ### Build the public benchmark index
 
@@ -661,45 +578,6 @@ Upload documents, build the index, and submit questions through the browser inte
 
 The public benchmark and private-document workflows use the same default vector-store location in the initial implementation. Build the index for the intended workflow before querying it.
 
-## 18. Privacy and Security Considerations
+## 18. Limitations
 
-VaultRAG is designed to keep the main document-processing and inference pipeline local:
-
-- Text extraction occurs locally.
-- Embeddings are generated locally.
-- The FAISS index is stored locally.
-- Retrieval and reranking run locally.
-- The selected LLM generates responses locally.
-
-Once dependencies and model weights have been downloaded, ordinary local question answering does not require a paid cloud LLM API.
-
-However, local execution alone does not provide comprehensive security. The current implementation is a single-user prototype and does not include enterprise-grade authentication, encryption at rest, multi-user authorization, or document-level access control.
-
-Additional precautions are necessary before using genuinely sensitive material:
-
-- Restrict access to document directories and model caches.
-- Avoid committing private documents, indexes, or generated sensitive outputs to GitHub.
-- Apply appropriate disk encryption and operating-system permissions.
-- Review dependency and model-download behaviour.
-- Implement authentication and document-level authorization before multi-user deployment.
-- Validate that no sensitive content is written to unintended logs or shared locations.
-
-The system should be described as a local, privacy-conscious prototype rather than a certified secure document platform.
-
-## 19. Limitations
-
-The current implementation provides a foundation for further engineering and experimentation.
-
-Its main limitations include:
-
-- **Model capability:** A compact local LLM may struggle with complex reasoning or lengthy contexts.
-- **Retrieval quality:** Semantically similar passages are not always the passages that contain the answer.
-- **Reranking:** The lexical reranker is a heuristic rather than a learned relevance model.
-- **PDF extraction:** Scanned documents may require OCR.
-- **Chunking:** Word-based segmentation does not always preserve complete semantic units.
-- **Evaluation:** Answer-string matching and reference-answer metrics cannot fully assess factual faithfulness.
-- **Performance:** CPU generation latency depends on model size, prompt length, hardware, and software configuration.
-- **Access control:** The initial application does not isolate separate users' documents.
-- **Citation reliability:** Retrieved source references improve traceability but do not guarantee that every generated claim is supported.
-
-These limitations provide clear directions for future development and controlled experimentation.
+VaultRAG's performance depends on the local LLM, retrieval quality, and available hardware. Its heuristic reranker, word-based chunking, limited PDF extraction, and CPU inference can affect accuracy and speed. Evaluation metrics and citations do not guarantee factual faithfulness. Although document processing and inference run locally, the prototype lacks enterprise-grade authentication, encryption at rest, and multi-user access control. Sensitive documents, indexes, and outputs must be protected from unauthorized access and excluded from public repositories. Future improvements include better retrieval, stronger evaluation, optimized inference, and enhanced security.
